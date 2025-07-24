@@ -1,5 +1,6 @@
 #pragma once
 
+#include <curl/curl.h>
 #include <string>
 #include <vector>
 
@@ -9,11 +10,18 @@ void quit();
 
 class Connection {
 private:
-  std::vector<std::string> cloudHosts;
+  std::string cloudHost;
   std::string projectID;
   std::string username;
   std::string userAgent;
 
-  Connection(std::vector<std::string> cloudHosts, std::string projectID, std::string username, std::string userAgent) : cloudHosts(cloudHosts), projectID(projectID), username(username), userAgent(userAgent) {}
+  CURL *curl;
+  CURLcode res;
+
+  /**
+   * Requires all arguments unlike TurboWarp/mist
+   */
+  Connection(std::string cloudHost, std::string projectID, std::string username, std::string userAgent);
+  ~Connection();
 };
 } // namespace mist
