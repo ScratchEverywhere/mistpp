@@ -6,13 +6,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 include(FetchContent)
 
-FetchContent_Declare(
-  curl
-  GIT_REPOSITORY https://github.com/curl/curl.git
-  GIT_TAG curl-8_10_1
-)
-FetchContent_MakeAvailable(curl)
+find_package(CURL REQUIRED)
 
-add_library(mist++ STATIC src/mist.cpp)
+add_library(mist++ src/mist.cpp)
 target_include_directories(mist++ PUBLIC include)
-target_link_libraries(mist++ PUBLIC curl_s)
+target_link_libraries(mist++ PRIVATE CURL::libcurl)
