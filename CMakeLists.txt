@@ -5,7 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(CURL REQUIRED)
+find_package(nlohmann_json REQUIRED)
 
 add_library(mist++ src/mist.cpp)
 target_include_directories(mist++ PUBLIC include)
-target_link_libraries(mist++ PRIVATE CURL::libcurl)
+target_link_libraries(mist++ PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
+
+option(BUILD_TEST "Build the test project" ON)
+
+if(BUILD_TEST)
+  add_subdirectory(test)
+endif()
