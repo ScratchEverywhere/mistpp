@@ -1,19 +1,44 @@
 cmake_minimum_required(VERSION 3.14)
-project(Mist++ VERSION 0.1.0 LANGUAGES CXX)
+project(Mist++ VERSION 0.1.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 find_package(CURL REQUIRED)
-find_package(nlohmann_json REQUIRED)
 
-add_library(mist++ src/mist.cpp)
+include(FetchContent)
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
+FetchContent_MakeAvailable(json)
+
+set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries (OFF for static)")
+if(BUILD_SHARED_LIBS)
+  add_library(mist++ SHARED src/mist.cpp)
+else()
+  add_library(mist++ STATIC src/mist.cpp)
+endif()
+
 set_target_properties(PROPERTIES
-  VERSION   0.1.0
+  VERSION   0.1.1
   SOVERSION 0
 )
-target_include_directories(mist++ PUBLIC include)
+
+target_include_directories(mist++ PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
 target_link_libraries(mist++ PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
+
+install(TARGETS mist++
+  LIBRARY DESTINATION lib
+  ARCHIVE DESTINATION lib
+)
+
+install(DIRECTORY include/ DESTINATION include
+  FILES_MATCHING
+  PATTERN "*.hpp"
+  PATTERN "*.h"
+)
 
 option(BUILD_TEST "Build the test project" ON)
 
