@@ -35,7 +35,7 @@ int main() {
     while (counter < 20) {
       counter++;
       client.set("☁ High Score", std::to_string(counter));
-      std::cout << "Set \"☁ High Score\" to: " << counter << std::endl;
+      std::cout << "[INFO] Set variable \"☁ High Score\" to: " << counter << std::endl;
 
       std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
