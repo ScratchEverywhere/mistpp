@@ -8,9 +8,9 @@ find_package(CURL REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 add_library(mist++ src/mist.cpp)
-set_target_properties( PROPERTIES
-    VERSION   0.1.0
-    SOVERSION 0
+set_target_properties(PROPERTIES
+  VERSION   0.1.0
+  SOVERSION 0
 )
 target_include_directories(mist++ PUBLIC include)
 target_link_libraries(mist++ PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
