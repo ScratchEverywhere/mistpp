@@ -1,13 +1,15 @@
 #pragma once
 
 #include <atomic>
-#include <curl/curl.h>
 #include <functional>
 #include <map>
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <string>
+#include <sys/select.h>
 #include <thread>
+
+#include <curl/curl.h>
 
 class MistConnection {
 public:

@@ -12,7 +12,7 @@ MistConnection::MistConnection(
     const std::string &user_agent_contact_info) : project_id_(project_id),
                                                   username_(username),
                                                   user_agent_contact_info_(user_agent_contact_info),
-                                                  ws_url_("wss://clouddata.turbowarp.org/"),
+                                                  ws_url_("wss://clouddata.turbowarp.org/"), // TODO: make this configurable
                                                   curl_easy_(nullptr),
                                                   curl_multi_(nullptr),
                                                   running_(false),
@@ -47,7 +47,7 @@ bool MistConnection::connect() {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L); // WebSocket mode
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.1.3 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.1.4 " + user_agent_contact_info_).c_str());
 
   curl_multi_ = curl_multi_init();
   if (!curl_multi_) {
