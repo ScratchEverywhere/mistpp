@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(Mist++ VERSION 0.1.1 LANGUAGES CXX)
+project(Mist++ VERSION 0.1.2 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -18,7 +18,7 @@ else()
 endif()
 
 set_target_properties(PROPERTIES
-  VERSION   0.1.1
+  VERSION   0.1.2
   SOVERSION 0
 )
 
@@ -38,6 +38,16 @@ install(DIRECTORY include/ DESTINATION include
   FILES_MATCHING
   PATTERN "*.hpp"
   PATTERN "*.h"
+)
+
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/mist++.pc.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/mist++.pc"
+  @ONLY
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/mist++.pc"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/pkgconfig"
 )
 
 option(BUILD_TEST "Build the test project" ON)

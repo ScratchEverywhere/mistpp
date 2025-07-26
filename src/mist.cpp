@@ -47,7 +47,7 @@ bool MistConnection::connect() {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L); // WebSocket mode
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.1.1 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.1.2 " + user_agent_contact_info_).c_str());
 
   curl_multi_ = curl_multi_init();
   if (!curl_multi_) {
