@@ -1,6 +1,7 @@
 #include "mist/mist.hpp"
 #include <chrono>
 #include <cstring>
+#include <curl/curl.h>
 #include <iostream>
 
 // Define the static member
@@ -31,7 +32,7 @@ MistConnection::~MistConnection() {
   }
 }
 
-bool MistConnection::connect() {
+bool MistConnection::connect(bool secure) {
   std::lock_guard<std::mutex> lock(curl_mutex_);
   if (running_) {
     std::cerr << "[ERROR] Already connected or attempting to connect." << std::endl;
@@ -47,7 +48,11 @@ bool MistConnection::connect() {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L); // WebSocket mode
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.1.4 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.2.0 " + user_agent_contact_info_).c_str());
+  if (!secure) {
+    curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
+    curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
+  }
 
   curl_multi_ = curl_multi_init();
   if (!curl_multi_) {
@@ -80,6 +85,10 @@ bool MistConnection::connect() {
   });
 
   return true;
+}
+
+bool MistConnection::connect() {
+  return connect(true);
 }
 
 void MistConnection::disconnect() {

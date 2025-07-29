@@ -23,6 +23,7 @@ public:
 
   ~MistConnection();
 
+  bool connect(bool secure);
   bool connect();
   void disconnect();
 

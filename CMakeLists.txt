@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(Mist++ VERSION 0.1.4 LANGUAGES CXX)
+project(Mist++ VERSION 0.2.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -18,7 +18,7 @@ else()
 endif()
 
 set_target_properties(PROPERTIES
-  VERSION   0.1.4
+  VERSION   0.2.0
   SOVERSION 0
 )
 
