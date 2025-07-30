@@ -7,17 +7,9 @@
 // Define the static member
 MistConnection::CurlGlobalIniter MistConnection::s_curl_initer;
 
-MistConnection::MistConnection(
-    const std::string &project_id,
-    const std::string &username,
-    const std::string &user_agent_contact_info) : project_id_(project_id),
-                                                  username_(username),
-                                                  user_agent_contact_info_(user_agent_contact_info),
-                                                  ws_url_("wss://clouddata.turbowarp.org/"), // TODO: make this configurable
-                                                  curl_easy_(nullptr),
-                                                  curl_multi_(nullptr),
-                                                  running_(false),
-                                                  connected_(false) {}
+MistConnection::MistConnection(const std::string &project_id, const std::string &username, const std::string &user_agent_contact_info) : project_id_(project_id), username_(username), user_agent_contact_info_(user_agent_contact_info), ws_url_("wss://clouddata.turbowarp.org/"), curl_easy_(nullptr), curl_multi_(nullptr), running_(false), connected_(false) {}
+
+MistConnection::MistConnection(const std::string &url, const std::string &project_id, const std::string &username, const std::string &user_agent_contact_info) : project_id_(project_id), username_(username), user_agent_contact_info_(user_agent_contact_info), ws_url_(url), curl_easy_(nullptr), curl_multi_(nullptr), running_(false), connected_(false) {}
 
 MistConnection::~MistConnection() {
   disconnect();
@@ -47,8 +39,8 @@ bool MistConnection::connect(bool secure) {
   }
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
-  curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L); // WebSocket mode
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.2.0 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.0 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);

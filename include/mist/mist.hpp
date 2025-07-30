@@ -16,10 +16,9 @@ public:
   using VariableUpdateCallback = std::function<void(const std::string &name, const std::string &value)>;
   using ConnectionStatusCallback = std::function<void(bool connected, const std::string &message)>;
 
-  MistConnection(
-      const std::string &project_id,
-      const std::string &username,
-      const std::string &user_agent_contact_info);
+  MistConnection(const std::string &project_id, const std::string &username, const std::string &user_agent_contact_info);
+
+  MistConnection(const std::string &url, const std::string &project_id, const std::string &username, const std::string &user_agent_contact_info);
 
   ~MistConnection();
 
