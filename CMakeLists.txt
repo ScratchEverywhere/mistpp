@@ -27,7 +27,7 @@ target_include_directories(mist++ PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(mist++ PRIVATE CURL::libcurl nlohmann_json::nlohmann_json)
+target_link_libraries(mist++ PUBLIC CURL::libcurl nlohmann_json::nlohmann_json)
 
 install(TARGETS mist++
   LIBRARY DESTINATION lib
