@@ -3,7 +3,7 @@
 A port of [TurboWarp/mist](https://github.com/TurboWarp/mist) to C++.
 
 This project was made specifically for
-[Scratch 3DS](https://github.com/NateXS/Scratch-3DS).
+[Scratch 3DS](https://github.com/ScratchEverywhere/ScratchEverywhere).
 
 ## Installation
 
@@ -20,4 +20,4 @@ sudo make install
 ### DevkitPro
 
 Use the packages in
-[the mistpp-packages repo](https://github.grady.link/mistpp-packages).
+[the mistpp-packages repo](https://github.com/ScratchEverywhere/mistpp-packages).
