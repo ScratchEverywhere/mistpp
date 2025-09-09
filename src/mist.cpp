@@ -40,7 +40,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.0 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.1 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
