@@ -3,6 +3,7 @@
 #include <cstring>
 #include <curl/curl.h>
 #include <iostream>
+#include <string>
 
 // Define the static member
 MistConnection::CurlGlobalIniter MistConnection::s_curl_initer;
@@ -40,7 +41,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.1 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.2 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -249,31 +250,35 @@ void MistConnection::send_json_message(const nlohmann::json &json_msg) {
 }
 
 void MistConnection::handle_recv_message(const char *data, size_t len) {
-  try {
-    std::string payload_str(data, len);
-    nlohmann::json json_msg = nlohmann::json::parse(payload_str);
+  std::istringstream stream(std::string(data, len));
+  std::string line;
 
-    if (json_msg.contains("method") && json_msg["method"] == "set") {
-      std::string name = json_msg["name"].get<std::string>();
+  while (std::getline(stream, line)) {
+    try {
+      nlohmann::json json_msg = nlohmann::json::parse(line);
 
-      std::string value_str;
-      if (json_msg.contains("value")) {
-        const auto &value_json = json_msg["value"];
-        if (value_json.is_string()) value_str = value_json.get<std::string>();
-        else if (value_json.is_number()) value_str = std::to_string(value_json.get<double>());
-        else if (value_json.is_boolean()) value_str = value_json.get<bool>() ? "true" : "false";
-        else if (value_json.is_null()) value_str = "null";
-        else value_str = value_json.dump();
-      } else value_str = "";
+      if (json_msg.contains("method") && json_msg["method"] == "set") {
+        std::string name = json_msg["name"].get<std::string>();
 
-      std::lock_guard<std::mutex> lock(variables_mutex_);
-      cloud_variables_[name] = value_str;
+        std::string value_str;
+        if (json_msg.contains("value")) {
+          const auto &value_json = json_msg["value"];
+          if (value_json.is_string()) value_str = value_json.get<std::string>();
+          else if (value_json.is_number()) value_str = std::to_string(value_json.get<double>());
+          else if (value_json.is_boolean()) value_str = value_json.get<bool>() ? "true" : "false";
+          else if (value_json.is_null()) value_str = "null";
+          else value_str = value_json.dump();
+        } else value_str = "";
 
-      if (var_update_callback_) var_update_callback_(name, value_str);
+        std::lock_guard<std::mutex> lock(variables_mutex_);
+        cloud_variables_[name] = value_str;
+
+        if (var_update_callback_) var_update_callback_(name, value_str);
+      }
+    } catch (const nlohmann::json::exception &e) {
+      std::cerr << "[ERROR] JSON parsing error: " << e.what() << " Raw message: " << std::string(data, len) << std::endl;
+    } catch (const std::exception &e) {
+      std::cerr << "[ERROR] Error processing message: " << e.what() << " Raw message: " << std::string(data, len) << std::endl;
     }
-  } catch (const nlohmann::json::exception &e) {
-    std::cerr << "[ERROR] JSON parsing error: " << e.what() << " Raw message: " << std::string(data, len) << std::endl;
-  } catch (const std::exception &e) {
-    std::cerr << "[ERROR] Error processing message: " << e.what() << " Raw message: " << std::string(data, len) << std::endl;
   }
 }
