@@ -41,7 +41,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.3 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.4 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -260,7 +260,9 @@ void MistConnection::handle_recv_message(const char *data, size_t len) {
       if (json_msg.contains("method") && json_msg["method"] == "set") {
         std::string name = json_msg["name"].get<std::string>();
 
-        std::string value = json_msg["value"].get<std::string>();
+        std::string value;
+        if (json_msg["value"].is_string()) value = json_msg["value"].get<std::string>();
+        else value = std::to_string(json_msg["value"].get<double>());
 
         std::lock_guard<std::mutex> lock(variables_mutex_);
         cloud_variables_[name] = value;
