@@ -10,14 +10,12 @@ This project was made specifically for
 ### PC
 
 ```sh
-mkdir build
-cd build
-cmake .. -DCMAKE_BUILD_TYPE="Release" -DBUILD_TEST=off
-make
-sudo make install
+cmake -B build -DCMAKE_BUILD_TYPE="Release" -DBUILD_TEST=off
+cmake --build build
+sudo cmake --install build
 ```
 
-### DevkitPro
+### Homebrew
 
 Use the packages in
 [the mistpp-packages repo](https://github.com/ScratchEverywhere/mistpp-packages).
