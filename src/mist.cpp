@@ -3,6 +3,7 @@
 #include <cstring>
 #include <curl/curl.h>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 // Define the static member
