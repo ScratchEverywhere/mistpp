@@ -6,9 +6,11 @@
 #include <mutex>
 #include <nlohmann/json.hpp>
 #include <string>
-#include <sys/select.h>
 #include <thread>
 
+#if !defined(_WIN32)
+#include <sys/select.h>
+#endif
 #include <curl/curl.h>
 
 class MistConnection {
