@@ -42,7 +42,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.5 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.6 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
@@ -86,17 +86,21 @@ bool MistConnection::connect() {
 }
 
 void MistConnection::disconnect() {
-  if (!running_) return;
+  if (!running_ && !curl_thread_.joinable()) return;
   running_ = false;
 
-  std::lock_guard<std::mutex> lock(curl_mutex_);
-  if (connected_) {
-    size_t sent;
-    CURLcode res = curl_ws_send(curl_easy_, "", 0, &sent, 0, CURLWS_CLOSE);
-    if (res != CURLE_OK) std::cerr << "[ERROR] Error sending WebSocket close frame: " << curl_easy_strerror(res) << std::endl;
+  {
+    std::lock_guard<std::mutex> lock(curl_mutex_);
+    if (connected_) {
+      size_t sent;
+      CURLcode res = curl_ws_send(curl_easy_, "", 0, &sent, 0, CURLWS_CLOSE);
+      if (res != CURLE_OK) std::cerr << "[ERROR] Error sending WebSocket close frame: " << curl_easy_strerror(res) << std::endl;
+    }
   }
 
   if (curl_thread_.joinable()) curl_thread_.join();
+
+  std::lock_guard<std::mutex> lock(curl_mutex_);
 
   if (curl_easy_) {
     curl_multi_remove_handle(curl_multi_, curl_easy_);
