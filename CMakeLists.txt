@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.14)
-project(Mist++ VERSION 0.3.7 LANGUAGES CXX)
+project(Mist++ VERSION 0.3.8 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+set(MISTPP_INIT_REPO ON)
+if(DEFINED __CATALOG_BOOTSTRAPPED)
+  set(MISTPP_INIT_REPO OFF)
+endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cl-bootstrap.cmake)
-cl_repo()
+if(MISTPP_INIT_REPO)
+  cl_repo()
+endif()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries (OFF for static)")
 if(BUILD_SHARED_LIBS)
@@ -15,7 +21,7 @@ else()
 endif()
 
 set_target_properties(PROPERTIES
-  VERSION   0.3.7
+  VERSION   0.3.8
   SOVERSION 0
 )
 
