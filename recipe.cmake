@@ -10,7 +10,7 @@ function(_recipe_mistpp_system)
 endfunction()
 
 function(_recipe_mistpp_source)
-  set(MISTPP_TAG "v0.3.7")
+  set(MISTPP_TAG "v0.3.8")
   if(CL_REQ_VERSION)
     set(MISTPP_TAG "v${CL_REQ_VERSION}")
   endif()
