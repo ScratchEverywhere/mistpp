@@ -4,15 +4,8 @@ project(Mist++ VERSION 0.3.6 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-if(NOT TARGET CURL::libcurl)
-  find_package(CURL REQUIRED)
-endif()
-
-if(NOT TARGET nlohmann_json::nlohmann_json)
-  include(FetchContent)
-  FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz)
-  FetchContent_MakeAvailable(json)
-endif()
+include(${CMAKE_CURRENT_SOURCE_DIR}/cl-bootstrap.cmake)
+cl_repo()
 
 set(BUILD_SHARED_LIBS OFF CACHE BOOL "Build shared libraries (OFF for static)")
 if(BUILD_SHARED_LIBS)
@@ -31,7 +24,8 @@ target_include_directories(mist++ PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_link_libraries(mist++ PUBLIC CURL::libcurl nlohmann_json::nlohmann_json)
+cl_add_dep(mist++ libcurl PUBLIC)
+cl_add_dep(mist++ nlohmann_json PUBLIC)
 
 install(TARGETS mist++
   LIBRARY DESTINATION lib
