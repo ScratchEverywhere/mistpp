@@ -33,6 +33,26 @@ bool MistConnection::connect(bool secure) {
     return false;
   }
 
+  curl_version_info_data *versionInfo = curl_version_info(CURLVERSION_NOW);
+  if (!(versionInfo->features & CURL_VERSION_SSL)) {
+    std::cerr << "[ERROR] This version of CURL does not support SSL." << std::endl;
+    if (conn_status_callback_) conn_status_callback_(false, "CURL has SSL disabled.");
+    return false;
+  }
+
+  bool supportsWebsockets = false;
+  for (unsigned int i = 0; versionInfo->protocols[i]; i++) {
+    if (strcmp(versionInfo->protocols[i], "wss") == 0) {
+      supportsWebsockets = true;
+      break;
+    }
+  }
+  if (!supportsWebsockets) {
+    std::cerr << "[ERROR] This version of CURL does not support WebSockets." << std::endl;
+    if (conn_status_callback_) conn_status_callback_(false, "CURL has WebSockets disabled.");
+    return false;
+  }
+
   curl_easy_ = curl_easy_init();
   if (!curl_easy_) {
     std::cerr << "[ERROR] Failed to initialize CURL easy handle." << std::endl;
@@ -42,7 +62,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.6 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.7 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);
