@@ -6,8 +6,13 @@
 #include <sstream>
 #include <string>
 
-// Define the static member
-MistConnection::CurlGlobalIniter MistConnection::s_curl_initer;
+static void ensureCurlGlobalInit() {
+  struct CurlGlobalIniter {
+    CurlGlobalIniter() { curl_global_init(CURL_GLOBAL_DEFAULT); }
+    ~CurlGlobalIniter() { curl_global_cleanup(); }
+  };
+  static CurlGlobalIniter initer;
+}
 
 MistConnection::MistConnection(const std::string &project_id, const std::string &username, const std::string &user_agent_contact_info) : project_id_(project_id), username_(username), user_agent_contact_info_(user_agent_contact_info), ws_url_("wss://clouddata.turbowarp.org/"), curl_easy_(nullptr), curl_multi_(nullptr), running_(false), connected_(false) {}
 
@@ -33,6 +38,7 @@ bool MistConnection::connect(bool secure) {
     return false;
   }
 
+  ensureCurlGlobalInit();
   curl_version_info_data *versionInfo = curl_version_info(CURLVERSION_NOW);
   if (!(versionInfo->features & CURL_VERSION_SSL)) {
     std::cerr << "[ERROR] This version of CURL does not support SSL." << std::endl;
@@ -62,7 +68,7 @@ bool MistConnection::connect(bool secure) {
 
   curl_easy_setopt(curl_easy_, CURLOPT_URL, ws_url_.c_str());
   curl_easy_setopt(curl_easy_, CURLOPT_CONNECT_ONLY, 2L);
-  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.8 " + user_agent_contact_info_).c_str());
+  curl_easy_setopt(curl_easy_, CURLOPT_USERAGENT, ("Mist++/0.3.9 " + user_agent_contact_info_).c_str());
   if (!secure) {
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYPEER, 0L);
     curl_easy_setopt(curl_easy_, CURLOPT_SSL_VERIFYHOST, 0L);

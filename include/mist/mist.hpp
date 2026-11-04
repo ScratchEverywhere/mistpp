@@ -63,10 +63,4 @@ private:
   void send_json_message(const nlohmann::json &json_msg);
   std::string generateUserAgent() const;
   void handle_recv_message(const char *data, size_t len);
-
-  struct CurlGlobalIniter {
-    CurlGlobalIniter() { curl_global_init(CURL_GLOBAL_DEFAULT); }
-    ~CurlGlobalIniter() { curl_global_cleanup(); }
-  };
-  static CurlGlobalIniter s_curl_initer;
 };
